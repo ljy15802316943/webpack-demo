@@ -30,7 +30,10 @@ module.exports = {
   // 各种插件配置
   plugins: [
     // 功能: 默认会创建一个空的HTML,自动引入打包输出的所有资源(JS/CSS)
-    new htmlWebpackPlugin()
+    new htmlWebpackPlugin({
+      // 这里的index.html文件会作为打包build下index.html文件的模板。
+      template: './src/index.html',
+    })
   ],
   // 模式
   mode: 'development', // 开发环境

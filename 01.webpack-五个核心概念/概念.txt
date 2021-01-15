@@ -1,0 +1,22 @@
+1.2.1 Entry
+  入口(Entry)指示 Webpack 已哪个文件为入口起点开始打包，分析构建内部依赖图。
+  打包的入口文件。如 "./src/index.js"
+
+1.2.2 Output
+  输出(Output)指示 Webpack 打包后的资源 bundles 输出到哪里去，以及如何命名。
+  打包文件的命名和路径的指定。
+
+1.2.3 Loader
+  loader 让 Webpack 能够去处理那些分 javascript 文件 (webpack自身只理解 javascript)
+  把css|less|图片等其他资源编译成 webpack 能识别的代码。
+
+1.2.4 Plugins
+  插件（plugins）可以用于执行范围更广的任务。插件的范围包括从打包优化和压缩，一直到重新定义环境的变量等。
+
+1.2.5 Mode
+  指定包加载环境。
+  development 能让代码本地调试运行的环境。
+  production 能让代码优化上线的运行环境。
+
+  打包时 Entry 会找到入口文件，并执找到入口文件引入的依赖项， 如 inport './css' | 图片等。 -> Loader 会把引入的依赖项编译成webpack能识别的代码。
+  

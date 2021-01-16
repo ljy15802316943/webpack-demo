@@ -8,6 +8,8 @@
 
 // resolve 用来拼接绝对路径的方法
 const { resolve } = require('path');
+// plugins的插件，作用是打包文件自动生成 html文件，并且自动引入打包好的js文件。
+const htmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   // webpack 配置
@@ -18,8 +20,10 @@ module.exports = {
     // 输出文件名
     filename: 'build.js',
     // 输出路径
-    // __dirname nodejs的变量，表示 02.打包样式资源 目录下 build文件目录的决定路径
-    path: resolve(__dirname, 'build')
+    // __dirname nodejs的变量，表示 02.打包样式资源 目录下 build文件目录的绝对路径
+    path: resolve(__dirname, 'build'),
+    // 输出文件里面的引入路径。
+    publicPath: './',
   },
   // loader的配置
   module: {
@@ -50,10 +54,37 @@ module.exports = {
           'less-loader',
         ]
       },
+      {
+        // 问题：默认处理不了打包文件html中img引入的本地图片
+        test: /\.(png|jpg|gif|svg)$/,
+        // 下载 url-loader file-loader
+        loader: 'file-loader',
+        // 打包资源配置
+        options: {
+          // 图片资源小于8kb,就会转为base64。
+          // 优点：减少请求数量（减轻服务器压力）
+          // 缺点：图片体积会更大（文件请求速度更慢）
+          // 打包资源重命名
+          // [hash:10] 取hash值的前10位作为文件命名，ext取原来的扩展名。
+          name: '[hash:10].[ext]',
+          limit: 8 * 1024
+        }
+      },
+      {
+        // 处理打包文件html中img引入的本地图片问题
+        test: /\.html$/,
+        loader: 'html-loader'
+      }
     ]
   },
   // 各种插件配置
-  plugins: [],
+  plugins: [
+    // 功能: 默认会创建一个空的HTML,自动引入打包输出的所有资源(JS/CSS)
+    new htmlWebpackPlugin({
+      // 这里的index.html文件会作为打包build下index.html文件的模板。
+      template: './src/index.html',
+    })
+  ],
   // 模式
   mode: 'development', // 开发环境
   // mode: 'production', // 生产环境

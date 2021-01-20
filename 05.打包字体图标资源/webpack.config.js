@@ -22,8 +22,6 @@ module.exports = {
     // 输出路径
     // __dirname nodejs的变量，表示 02.打包样式资源 目录下 build文件目录的决定路径
     path: resolve(__dirname, 'build'),
-    // 打包后的html文件里面资源的引入路径。
-    publicPath: './'
   },
   // loader的配置
   module: {

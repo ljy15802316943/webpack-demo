@@ -23,7 +23,7 @@ module.exports = {
     // __dirname nodejs的变量，表示 02.打包样式资源 目录下 build文件目录的决定路径
     path: resolve(__dirname, 'build'),
     // 打包后的html文件里面资源的引入路径。
-    publicPath: './'
+    // publicPath: './'
   },
   // loader的配置
   module: {
@@ -78,6 +78,9 @@ module.exports = {
     // 自动打开浏览器
     open: true,
     // // 端口号
-    port: 3000
+    port: 3000,
+    // 文件修改后实时更新
+    inline: true,
+    historyApiFallback: true,
   }
 }

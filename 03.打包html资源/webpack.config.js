@@ -20,7 +20,7 @@ module.exports = {
     // 输出文件名
     filename: 'build.js',
     // 输出路径
-    // __dirname nodejs的变量，表示 02.打包样式资源 目录下 build文件目录的决定路径
+    // __dirname nodejs的变量，表示 02.打包样式资源 目录下 build文件目录的绝对路径
     path: resolve(__dirname, 'build')
   },
   // loader的配置

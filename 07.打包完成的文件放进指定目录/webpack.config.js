@@ -9,7 +9,7 @@ module.exports = {
   // 打包出口文件
   output: {
     // 出口文件js名称
-    filename: 'build.js',
+    filename: 'js/build.js',
     // __dirname表示绝对路径, huild文件目录。
     path: resolve(__dirname, 'build'),
   },
@@ -35,8 +35,11 @@ module.exports = {
           // 压缩图片 小于8kb自动转为base64.
           limit: 8 * 1024,
           name: '[hash:10].[ext]',
+          // 图片打包后放入的文件夹名称。
+          outputPath: 'img',
           // 解决打包文件html引入img的路径。
-          publicPath: './'
+          publicPath: './img',
+          
         }
       },
       {

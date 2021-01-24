@@ -9,49 +9,24 @@ module.exports = {
   // 打包出口文件
   output: {
     // 出口文件js名称
-    filename: 'build.js',
+    filename: 'js/build.js',
     // __dirname表示绝对路径, huild文件目录。
     path: resolve(__dirname, 'build'),
   },
   // loader配置
   module: {
     rules: [
-      // 多个loader用use处理，单个loader直接用loader处理。
+      // eslint配置。
+      // 1. 安装eslint库 cnpm i eslint eslint-loader -D
+      // 2. package.json 新增eslintConfig对象,里面已经写了，可以去看。
       {
-        // 处理css资源
-        test: /\.css/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        // 处理less资源
-        test: /\.less/,
-        use: ['style-loader', 'css-loader', 'less-loader']
-      },
-      {
-        // 处理图片资源
-        test: /\.(jpg|png|gif)$/,
-        loader: 'url-loader',
+        test: /\.js$/,
+        // 只检查自己写的源代码，第三方的库是不用检查的
+        exclude: /node_modules/,
+        loader: 'eslint-loader',
         options: {
-          // 压缩图片 小于8kb自动转为base64.
-          limit: 8 * 1024,
-          name: '[hash:10].[ext]',
-          // 解决打包文件html引入img的路径。
-          publicPath: './',
-        }
-      },
-      {
-        // 处理html中img引入资源。
-        test: /\.html/,
-        loader: 'html-loader',
-      },
-      {
-        // 处理其他资源
-        exclude: /\.(js|css|html|less|jpg|png|gif)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[hash:10].[ext]',
-          // 图片资源的路径
-          outputPath: "/src",
+          // 自动修复eslint的错误
+          fix: true
         }
       }
     ]
@@ -61,7 +36,8 @@ module.exports = {
     new htmlWebpackPlugin({
       // 打包出口文件html的模板
       template: './src/index.html',
-    })
+      filename: "index.html",
+    }),
   ],
   // 选择运行环境 development本地环境 production生产环境
   mode: 'development',

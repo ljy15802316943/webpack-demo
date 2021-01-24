@@ -82,7 +82,8 @@ module.exports = {
       // 打包文件提取出的css文件放置路劲，和文件重命名。
       filename: 'css/built.css'
     }),
-    // new optimizeCssAssetsWebpackPlugin()
+    // 压缩css。
+    new optimizeCssAssetsWebpackPlugin()
   ],
   // 选择运行环境 development本地环境 production生产环境
   mode: 'development',

@@ -26,17 +26,17 @@ module.exports = {
         loader: 'eslint-loader',
         options: {
           // 自动修复eslint的错误
-          fix: true
-        }
-      }
-    ]
+          fix: true,
+        },
+      },
+    ],
   },
   // 引入的插件配置。
   plugins: [
     new htmlWebpackPlugin({
       // 打包出口文件html的模板
       template: './src/index.html',
-      filename: "index.html",
+      filename: 'index.html',
     }),
   ],
   // 选择运行环境 development本地环境 production生产环境
@@ -51,5 +51,5 @@ module.exports = {
     port: 3000,
     // 默认开打浏览器。
     open: true,
-  }
-}
+  },
+};

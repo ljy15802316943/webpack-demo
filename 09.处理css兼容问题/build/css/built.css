@@ -1,0 +1,19 @@
+#box1 {
+  width: 100px;
+  height: 100px;
+  background: yellow;
+  display: flex;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+}
+#box2 {
+  width: 200px;
+  height: 200px;
+  background: yellowgreen;
+}
+#box3 {
+  width: 300px;
+  height: 300px;
+  background: yellowgreen;
+}
+

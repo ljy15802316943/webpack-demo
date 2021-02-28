@@ -76,7 +76,7 @@ module.exports = {
       filename: "index.html",
     }),
     new MiniCssExtractPlugin({
-      // 打包文件提取出的css文件放置路劲，和文件重命名。
+      // 打包文件提取出的css文件放置路径，和文件重命名。
       filename: 'css/built.css'
     })
   ],

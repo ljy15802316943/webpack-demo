@@ -31,9 +31,12 @@ module.exports = {
           // 这个loader取代style-loader。作用：提取js中的css成单独文件。
           MiniCssExtractPlugin.loader,
           'css-loader',
-          'postcss-loader',
+          'postcss-loader', // css兼容处理，自动添加前缀。
         /*
-          postcss-loader作用:
+          1. 新建 postcss.config.js 文件。
+          2. package.json 添加browserslist对象。
+          
+          postcss-loader作用: 
           css兼容性处理: postcss --> postcss-loader postcss-preset-env
           postcss-preset-env作用: 找到 package.json 文件里面的浏览器兼容性配置 browserslist对象并执行里面的配置.
 

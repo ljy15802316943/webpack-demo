@@ -9,8 +9,9 @@ const optimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 process.env.NODE_ENV = 'development';
 
 module.exports = {
-  // 打包入口文件。
-  entry: './src/js/index.js',
+  // 打包入口文件, ./src/index.html解决本地服务开启HMR功能热更新失效的问题。
+  entry: ['./src/js/index.js', './src/index.html'],
+  // entry: './src/js/index.js',
   // 打包出口文件。
   output: {
     // 打包js文件名和地址。
@@ -115,5 +116,7 @@ module.exports = {
     port: 3000,
     // 默认开打浏览器。
     open: true,
+    // 开启HMR功能，作用是局部更新。
+    hot: true,
   }
 }

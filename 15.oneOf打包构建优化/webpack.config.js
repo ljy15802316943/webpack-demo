@@ -5,6 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // 压缩css
 const optimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+// webpack打包前删除之前的打包文件
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 // 指定变量名，解决本地服务热更新失效的问题。
 process.env.NODE_ENV = 'development';
 
@@ -30,7 +32,7 @@ module.exports = {
             test: /.css$/,
             use: [
               // 把打包文件js代码里面的css抽离出来成为一个单独的css文件。
-              MiniCssExtractPlugin.loader,
+              MiniCssExtractPlugin.loader, 
               'css-loader',
               // css兼容性处理，执行browserslist配置。
               'postcss-loader',
@@ -59,9 +61,9 @@ module.exports = {
               name: '[hash:10].[ext]',
               limit: 8 * 1024,
               // 图片打包路径。
-              outputPath: './img',
+              outputPath: 'img',
               // 图片访问路径。
-              publicPath: 'img',
+              publicPath: './img',
             }
           },
           {
@@ -106,6 +108,7 @@ module.exports = {
     }),
     // 压缩css。
     new optimizeCssAssetsWebpackPlugin(),
+    new CleanWebpackPlugin(),
   ],
   // 指定启动环境
   mode: 'development', // 开发环境。

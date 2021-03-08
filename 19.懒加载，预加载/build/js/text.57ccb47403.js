@@ -1,0 +1,1 @@
+(self.webpackChunkwebpack_test=self.webpackChunkwebpack_test||[]).push([[547],{717:e=>{e.exports={mul:(e,s)=>e*s,count:(e,s)=>e+s},console.log("text.js文件加载了。")}}]);

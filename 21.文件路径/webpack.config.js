@@ -16,40 +16,14 @@ module.exports = {
   // 打包出口文件。
   output: {
     // 打包js文件名和地址。
-    filename: 'js/[name].[contenthash:8].js',
+    filename: 'js/[name].[contenthash:10].js',
     // 打包文件放置的目录地址。
     path: resolve(__dirname, 'build'),
   },
   // loader配置。
   module: {
     rules: [
-      /*
-        tree shaking: 去除无用代码
-          前提：1.必须es6模块化，2.开启production环境。
-          作用：减少代码体积，只有引入被使用到的代码才会被打包。
-          在package.json中配置
-            "sideEffects": "false" 所用文件都开启tree shaking。
-            问题：可能造成css/其他文件引入了但没有打包的情况。
-            解决："sideEffects": ["*.css"]
-      */
-
-      /*
-        缓存：
-          babel缓存
-            cacheDirectory: true
-          文件资源缓存
-            hash: 每次webpack构建时会生成一个唯一的hash值。
-              问题：因为js和css同时使用一个hash值。
-                如果重新打包，会导致所有缓存失效 （如果只更改一个文件，会影响所有的文件。）
-            chunkhash: 根据chunk生成的hash值。如果打包来源于同一个chunk，那个hash值就一样
-              问题：js和css的hash值还是一样的
-                因为css是在js中被引入的，所以同属一个chunk。
-            contenthash：根据文件的内容生成hash值。不同文件hash值一定不一样。
-      */
-
-      // oneOf会提升打包构建速度，原理是loader处理文件时只会执行一次。
-      // 注意：不能有两个配置同时处理一个文件。
-      // 如果有的话就单独提出来。
+      // 懒加载-预加载，看入口文件index.js文件。
       {
         oneOf: [
           {
@@ -77,12 +51,6 @@ module.exports = {
             loader: 'url-loader',
             // 打包资源配置
             options: {
-              // 图片资源小于8kb,就会转为base64。
-              // 优点：减少请求数量（减轻服务器压力）
-              // 缺点：图片体积会更大（文件请求速度更慢）
-              // 打包资源重命名
-              // [hash:10] 取hash值的前10位作为文件命名，ext取原来的扩展名。
-              // name: '[hash:10].[ext]',
               limit: 8 * 1024,
               name: '[name]-[hash:10].[ext]',
               // 图片打包路径。
@@ -92,13 +60,9 @@ module.exports = {
             }
           },
           {
-            // 处理打包文件html中img引入的本地图片问题
             test: /\.html$/,
             loader: 'html-loader',
           },
-          // eslint配置。
-          // 1. 安装eslint库 cnpm i eslint eslint-loader -D
-          // 2. package.json 新增eslintConfig对象,里面已经写了，可以去看。
           {
             test: /\.js$/,
             // 只检查自己写的源代码，第三方的库是不用检查的
@@ -115,6 +79,17 @@ module.exports = {
         ],
       },
     ]
+  },
+  // 解析模块的规则
+  resolve: {
+    // 配置解析模块路径别名。
+    // 优点：简写路径。
+    // 缺点：没有路径提示。
+    alias: {
+      $css: resolve(__dirname, 'src/css')
+    },
+    // 配置省略文件路径后缀名
+    extensions: ['.js', '.json', '.jsx', '.css'],
   },
   // 第三方插件配置。
   plugins: [
@@ -141,20 +116,6 @@ module.exports = {
   ],
   // 选择运行环境 development本地环境 production生产环境
   mode: 'production', 
-
-  // 代码分割
-  // 1. 可以将node_modules中代码单独打包一个共享的chunk最终输出
-  // 2. 自动分析多入口的chunk中，有没有公共的文件，如果有会打包成单独一个共享的chunk。
-  // 使用场景一般是多入口js文件。
-  // 如果是单入口js文件，想代码分割成多个文件，则需要在js代码写入。
-  // webpackChunkName: 'xxx' 重命名打包文件。
-  // import(/*webpackChunkName: 'xxx'*/'./text)
-  // .then(({sum, count})) => {
-  //   sum(1,2);
-  // })
-  // .catch((err) => {
-  //   console.log(err);
-  // })
   optimization: {
     splitChunks: {
       chunks: 'all'
@@ -173,13 +134,19 @@ module.exports = {
   devServer: {
     // 本地服务启动的文件夹。
     contentBase: resolve(__dirname, 'build'),
-    // 打印本地服务配置信息
+    // 启动gzip压缩。
     compress: true,
     // 端口号
     port: 3000,
+    // 域名
+    host: 'localhost',
     // 默认开打浏览器。
     open: true,
     // 开启HMR功能，作用是局部更新。
     hot: true,
+    // 不要显示启动服务器日志信息
+    clientLogLevel: 'none',
+    // 除了一些基本启动信息以外，其他内容都不要显示。
+    quiet: true,
   }
 }

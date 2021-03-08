@@ -16,42 +16,16 @@ module.exports = {
   // 打包出口文件。
   output: {
     // 打包js文件名和地址。
-    filename: 'js/[name].[contenthash:8].js',
+    filename: 'js/build.[contenthash:10].js',
     // 打包文件放置的目录地址。
     path: resolve(__dirname, 'build'),
   },
   // loader配置。
   module: {
     rules: [
-      /*
-        tree shaking: 去除无用代码
-          前提：1.必须es6模块化，2.开启production环境。
-          作用：减少代码体积，只有引入被使用到的代码才会被打包。
-          在package.json中配置
-            "sideEffects": "false" 所用文件都开启tree shaking。
-            问题：可能造成css/其他文件引入了但没有打包的情况。
-            解决："sideEffects": ["*.css"]
-      */
-
-      /*
-        缓存：
-          babel缓存
-            cacheDirectory: true
-          文件资源缓存
-            hash: 每次webpack构建时会生成一个唯一的hash值。
-              问题：因为js和css同时使用一个hash值。
-                如果重新打包，会导致所有缓存失效 （如果只更改一个文件，会影响所有的文件。）
-            chunkhash: 根据chunk生成的hash值。如果打包来源于同一个chunk，那个hash值就一样
-              问题：js和css的hash值还是一样的
-                因为css是在js中被引入的，所以同属一个chunk。
-            contenthash：根据文件的内容生成hash值。不同文件hash值一定不一样。
-      */
-
-      // oneOf会提升打包构建速度，原理是loader处理文件时只会执行一次。
-      // 注意：不能有两个配置同时处理一个文件。
-      // 如果有的话就单独提出来。
       {
         oneOf: [
+          // 多进程打包主要是处理js文件，看下面的js配置。
           {
             test: /.css$/,
             use: [
@@ -103,14 +77,31 @@ module.exports = {
             test: /\.js$/,
             // 只检查自己写的源代码，第三方的库是不用检查的
             exclude: /node_modules/,
-            loader: 'eslint-loader',
-            options: {
-              // 自动修复eslint的错误
-              fix: true,
-              // 开启babel缓存
-              // 第二次构建时，会读取之前的缓存
-              cacheDirectory: true,
-            }
+            use: [
+              /*
+                多进程打包
+                下载: cnpm i thread-loader -S
+                开启进程需要根据项目大小使用，js文件越多打包速度越快。
+                进程启动时间大概为600ms，进程通信也有开销。
+                只有工作时间比较长，才需要多进程打包。
+              */ 
+              {
+                loader: 'thread-loader',
+                options: {
+                  workers: 2, // 开启进程数。
+                }
+              },
+              {
+                loader: 'eslint-loader',
+                options: {
+                  // 自动修复eslint的错误
+                  fix: true,
+                  // 开启babel缓存
+                  // 第二次构建时，会读取之前的缓存
+                  cacheDirectory: true,
+                }
+              }
+            ],
           }
         ],
       },
@@ -175,6 +166,8 @@ module.exports = {
     contentBase: resolve(__dirname, 'build'),
     // 打印本地服务配置信息
     compress: true,
+    // 路由重定向
+    historyApiFallback: true,
     // 端口号
     port: 3000,
     // 默认开打浏览器。

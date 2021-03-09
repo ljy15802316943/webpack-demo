@@ -7,6 +7,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const optimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 // webpack打包前删除之前的打包文件
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+const webpack = require('webpack');
+
 // 指定变量名，解决本地服务热更新失效的问题。
 process.env.NODE_ENV = 'development';
 
@@ -16,16 +19,18 @@ module.exports = {
   // 打包出口文件。
   output: {
     // 打包js文件名和地址。
-    filename: 'js/build.[contenthash:10].js',
+    filename: 'js/build.js',
     // 打包文件放置的目录地址。
     path: resolve(__dirname, 'build'),
   },
   // loader配置。
   module: {
     rules: [
+      // oneOf会提升打包构建速度，原理是loader处理文件时只会执行一次。
+      // 注意：不能有两个配置同时处理一个文件。
+      // 如果有的话就单独提出来。
       {
         oneOf: [
-          // 多进程打包主要是处理js文件，看下面的js配置。
           {
             test: /.css$/,
             use: [
@@ -77,31 +82,14 @@ module.exports = {
             test: /\.js$/,
             // 只检查自己写的源代码，第三方的库是不用检查的
             exclude: /node_modules/,
-            use: [
-              /*
-                多进程打包
-                下载: cnpm i thread-loader -S
-                开启进程需要根据项目大小使用，js文件越多打包速度越快。
-                进程启动时间大概为600ms，进程通信也有开销。
-                只有工作时间比较长，才需要多进程打包。
-              */ 
-              {
-                loader: 'thread-loader',
-                options: {
-                  workers: 2, // 开启进程数。
-                }
-              },
-              {
-                loader: 'eslint-loader',
-                options: {
-                  // 自动修复eslint的错误
-                  fix: true,
-                  // 开启babel缓存
-                  // 第二次构建时，会读取之前的缓存
-                  cacheDirectory: true,
-                }
-              }
-            ],
+            loader: 'eslint-loader',
+            options: {
+              // 自动修复eslint的错误
+              fix: true,
+              // 开启babel缓存
+              // 第二次构建时，会读取之前的缓存
+              cacheDirectory: true,
+            }
           }
         ],
       },
@@ -109,6 +97,10 @@ module.exports = {
   },
   // 第三方插件配置。
   plugins: [
+    // 配置全局变量的地方，js访问TYPE就能拿到package.json里面的变量。
+    new webpack.DefinePlugin({
+      TYPE: JSON.stringify(process.env.TYPE),
+    }),
     new HtmlWebpackPlugin({
       // 打包文件 html的模板。
       template: './src/index.html',
@@ -124,39 +116,14 @@ module.exports = {
     new MiniCssExtractPlugin({
       // css文件名和地址。
       // filename: 'css/index.css',
-      filename: 'index.[contenthash:10].css',
+      filename: 'index.css',
     }),
     // 压缩css。
     new optimizeCssAssetsWebpackPlugin(),
     new CleanWebpackPlugin()
   ],
   // 选择运行环境 development本地环境 production生产环境
-  mode: 'production', 
-
-  // 代码分割
-  // 1. 可以将node_modules中代码单独打包一个共享的chunk最终输出
-  // 2. 自动分析多入口的chunk中，有没有公共的文件，如果有会打包成单独一个共享的chunk。
-  // 使用场景一般是多入口js文件。
-  // 如果是单入口js文件，想代码分割成多个文件，则需要在js代码写入。
-  // webpackChunkName: 'xxx' 重命名打包文件。
-  // import(/*webpackChunkName: 'xxx'*/'./text)
-  // .then(({sum, count})) => {
-  //   sum(1,2);
-  // })
-  // .catch((err) => {
-  //   console.log(err);
-  // })
-  optimization: {
-    splitChunks: {
-      chunks: 'all'
-    },
-    // 将当前模块的记录其他模块的hash单独打包为一个文件 runtime
-    // 解决：修改a文件导致b文件的contenthash变化，也是缓存失效。
-    runtimeChunk: {
-      name: entrypoint => `runtime-${entrypoint.name}`
-    }
-  },
-
+  mode: 'development', 
   // 解决package.json 里面写入 browserslist 导致 webpack-dev-server 热更新失效的问题。
   target: process.env.NODE_ENV === 'development' ? 'web' : 'browserslist',
   // 启动本地服务配置。
@@ -164,21 +131,13 @@ module.exports = {
   devServer: {
     // 本地服务启动的文件夹。
     contentBase: resolve(__dirname, 'build'),
-    // 启动gzip压缩。
+    // 打印本地服务配置信息
     compress: true,
-    // 路由重定向
-    historyApiFallback: true,
     // 端口号
     port: 3000,
-    // 域名
-    host: 'localhost',
     // 默认开打浏览器。
     open: true,
     // 开启HMR功能，作用是局部更新。
     hot: true,
-    // 不要显示启动服务器日志信息
-    clientLogLevel: 'none',
-    // 除了一些基本启动信息以外，其他内容都不要显示。
-    quiet: true,
   }
 }

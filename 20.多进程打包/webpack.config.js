@@ -7,6 +7,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const optimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 // webpack打包前删除之前的打包文件
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+const webpack = require('webpack');
+
 // 指定变量名，解决本地服务热更新失效的问题。
 process.env.NODE_ENV = 'development';
 
@@ -19,6 +22,8 @@ module.exports = {
     filename: 'js/build.[contenthash:10].js',
     // 打包文件放置的目录地址。
     path: resolve(__dirname, 'build'),
+    // 根据启动的服务变量改变路径。
+    publicPath: process.env.TYPE === 'dev' ? '/' : './',
   },
   // loader配置。
   module: {
@@ -30,7 +35,13 @@ module.exports = {
             test: /.css$/,
             use: [
               // 把打包文件js代码里面的css抽离出来成为一个单独的css文件。
-              MiniCssExtractPlugin.loader,
+              {
+                loader:MiniCssExtractPlugin.loader,
+                //在这里设置publicPath的路径就是background-img的路径 
+                options:{
+                  publicPath: '../'
+                }
+              },
               'css-loader',
               // css兼容性处理，执行browserslist配置。
               'postcss-loader',
@@ -39,7 +50,13 @@ module.exports = {
           {
             test: /.less$/,
             use: [
-              MiniCssExtractPlugin.loader,
+              {
+                loader:MiniCssExtractPlugin.loader,
+                //在这里设置publicPath的路径就是background-img的路径 
+                options:{
+                  publicPath: '../'
+                }
+              },
               'css-loader',
               'less-loader',
             ]
@@ -62,7 +79,7 @@ module.exports = {
               // 图片打包路径。
               outputPath: 'img',
               // 打包文件访问图片路径。
-              publicPath: './img',
+              // publicPath: './img',
             }
           },
           {
@@ -109,6 +126,10 @@ module.exports = {
   },
   // 第三方插件配置。
   plugins: [
+    // 配置全局变量的地方，js访问TYPE就能拿到package.json里面的变量。
+    new webpack.DefinePlugin({
+      TYPE: JSON.stringify(process.env.TYPE),
+    }),
     new HtmlWebpackPlugin({
       // 打包文件 html的模板。
       template: './src/index.html',
@@ -123,11 +144,11 @@ module.exports = {
     // 提取打包文件js里面的css抽离出来成为一个单独的css文件。
     new MiniCssExtractPlugin({
       // css文件名和地址。
-      // filename: 'css/index.css',
-      filename: 'index.[contenthash:10].css',
+      filename: 'css/[name].[contenthash:10].css',
     }),
     // 压缩css。
     new optimizeCssAssetsWebpackPlugin(),
+    // 打包前删除以前的包。
     new CleanWebpackPlugin()
   ],
   // 选择运行环境 development本地环境 production生产环境

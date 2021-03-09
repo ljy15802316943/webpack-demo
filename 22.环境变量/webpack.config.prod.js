@@ -7,6 +7,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const optimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 // webpack打包前删除之前的打包文件
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+const webpack = require('webpack');
+
 // 指定变量名，解决本地服务热更新失效的问题。
 process.env.NODE_ENV = 'development';
 
@@ -19,6 +22,8 @@ module.exports = {
     filename: 'js/build.js',
     // 打包文件放置的目录地址。
     path: resolve(__dirname, 'build'),
+    // 根据启动的服务变量改变路径。
+    publicPath: process.env.TYPE === 'dev' ? '/' : './',
   },
   // loader配置。
   module: {
@@ -32,7 +37,13 @@ module.exports = {
             test: /.css$/,
             use: [
               // 把打包文件js代码里面的css抽离出来成为一个单独的css文件。
-              MiniCssExtractPlugin.loader,
+              {
+                loader:MiniCssExtractPlugin.loader,
+                  //在这里设置publicPath的路径就是background-img的路径 
+                options:{
+                  publicPath: '../'
+                }
+              },
               'css-loader',
               // css兼容性处理，执行browserslist配置。
               'postcss-loader',
@@ -41,7 +52,13 @@ module.exports = {
           {
             test: /.less$/,
             use: [
-              MiniCssExtractPlugin.loader,
+              {
+                loader:MiniCssExtractPlugin.loader,
+                //在这里设置publicPath的路径就是background-img的路径 
+                options:{
+                  publicPath: '../'
+                }
+              },
               'css-loader',
               'less-loader',
             ]
@@ -64,7 +81,7 @@ module.exports = {
               // 图片打包路径。
               outputPath: 'img',
               // 打包文件访问图片路径。
-              publicPath: './img',
+              // publicPath: './img',
             }
           },
           {
@@ -94,6 +111,10 @@ module.exports = {
   },
   // 第三方插件配置。
   plugins: [
+    // 配置全局变量的地方，js访问TYPE就能拿到package.json里面的变量。
+    new webpack.DefinePlugin({
+      TYPE: JSON.stringify(process.env.TYPE),
+    }),
     new HtmlWebpackPlugin({
       // 打包文件 html的模板。
       template: './src/index.html',
@@ -108,8 +129,7 @@ module.exports = {
     // 提取打包文件js里面的css抽离出来成为一个单独的css文件。
     new MiniCssExtractPlugin({
       // css文件名和地址。
-      // filename: 'css/index.css',
-      filename: 'index.css',
+      filename: 'css/index.css',
     }),
     // 压缩css。
     new optimizeCssAssetsWebpackPlugin(),
@@ -124,13 +144,21 @@ module.exports = {
   devServer: {
     // 本地服务启动的文件夹。
     contentBase: resolve(__dirname, 'build'),
-    // 打印本地服务配置信息
+    // 启动gzip压缩。
     compress: true,
+    // 路由重定向
+    historyApiFallback: true,
     // 端口号
     port: 3000,
+    // 域名
+    host: 'localhost',
     // 默认开打浏览器。
     open: true,
     // 开启HMR功能，作用是局部更新。
     hot: true,
+    // 不要显示启动服务器日志信息
+    clientLogLevel: 'none',
+    // 除了一些基本启动信息以外，其他内容都不要显示。
+    quiet: true,
   }
 }

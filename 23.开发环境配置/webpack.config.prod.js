@@ -19,7 +19,7 @@ module.exports = {
   // 打包出口文件。
   output: {
     // 打包js文件名和地址。
-    filename: 'js/build.js',
+    filename: 'js/[name]-[contenthash:10].js',
     // 打包文件放置的目录地址。
     path: resolve(__dirname, 'build'),
     // 根据启动的服务变量改变路径。
@@ -103,8 +103,8 @@ module.exports = {
               // 开启babel缓存
               // 第二次构建时，会读取之前的缓存
               cacheDirectory: true,
-            }
-          }
+            },
+          },
         ],
       },
     ]
@@ -129,17 +129,27 @@ module.exports = {
     // 提取打包文件js里面的css抽离出来成为一个单独的css文件。
     new MiniCssExtractPlugin({
       // css文件名和地址。
-      filename: 'css/index.css',
+      filename: 'css/[name]-[contenthash:10].css',
     }),
     // 压缩css。
     new optimizeCssAssetsWebpackPlugin(),
     new CleanWebpackPlugin()
   ],
+  // 代码分割。
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+    // 将当前模块的记录其他模块的hash单独打包为一个文件 runtime
+    // 解决：修改a文件导致b文件的contenthash变化，也是缓存失效。
+    runtimeChunk: {
+      name: entrypoint => `runtime-${entrypoint.name}`
+    }
+  },
   // 选择运行环境 development本地环境 production生产环境
-  mode: 'development', 
+  mode: 'production', 
   // 解决package.json 里面写入 browserslist 导致 webpack-dev-server 热更新失效的问题。
-  // target: process.env.NODE_ENV === 'development' ? 'web' : 'browserslist',
-  target: 'web',
+  target: process.env.NODE_ENV === 'development' ? 'web' : 'browserslist',
   // 启动本地服务配置。
   // 本地开发服务配置
   devServer: {

@@ -72,8 +72,6 @@ module.exports = {
               name: '[name]-[hash:10].[ext]',
               // 图片打包路径。
               outputPath: 'img',
-              // 打包文件访问图片路径。
-              // publicPath: './img',
             }
           },
           {
@@ -135,7 +133,8 @@ module.exports = {
     new CleanWebpackPlugin()
   ],
   // 选择运行环境 development本地环境 production生产环境
-  mode: 'production', 
+  mode: 'production',
+  // 代码分割。 
   optimization: {
     splitChunks: {
       chunks: 'all'

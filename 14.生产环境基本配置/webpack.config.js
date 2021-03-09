@@ -145,13 +145,21 @@ module.exports = {
   devServer: {
     // 本地服务启动的文件夹。
     contentBase: resolve(__dirname, 'build'),
-    // 打印本地服务配置信息
+    // 启动gzip压缩。
     compress: true,
+    // 路由重定向
+    historyApiFallback: true,
     // 端口号
     port: 3000,
+    // 域名
+    host: 'localhost',
     // 默认开打浏览器。
     open: true,
     // 开启HMR功能，作用是局部更新。
     hot: true,
+    // 不要显示启动服务器日志信息
+    clientLogLevel: 'none',
+    // 除了一些基本启动信息以外，其他内容都不要显示。
+    quiet: true,
   }
 }

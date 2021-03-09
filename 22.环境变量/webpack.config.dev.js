@@ -111,7 +111,10 @@ module.exports = {
   },
   // 第三方插件配置。
   plugins: [
-    // 配置全局变量的地方，js访问TYPE就能拿到package.json里面的变量。
+    // 配置全局变量
+    // 安装：cnpm install cross-env -g
+    // 所有js文件都能访问TYPE变量。
+    // 变量来源于package.json里面的变量。
     new webpack.DefinePlugin({
       TYPE: JSON.stringify(process.env.TYPE),
     }),

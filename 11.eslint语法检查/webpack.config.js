@@ -17,7 +17,7 @@ module.exports = {
   module: {
     rules: [
       // eslint配置。
-      // 1. 安装eslint库 cnpm i eslint eslint-loader -D
+      // 1. 安装eslint库 cnpm i eslint eslint-loader eslint-config-airbnb eslint-plugin-import -D
       // 2. package.json 新增eslintConfig对象,里面已经写了，可以去看。
       {
         test: /\.js$/,

@@ -18,7 +18,7 @@ module.exports = {
     rules: [
       /*
         js兼容性处理： 
-        1. 安装库：cnpm i babel-loader core-js @babel/core @babel/runtime @babel/preset-env @babel/plugin-proposal-class-properties @babel/plugin-transform-runtime -D
+        1. 安装库：cnpm i babel-loader core-js @babel/core  @babel/runtime @babel/preset-env @babel/plugin-proposal-class-properties @babel/plugin-transform-runtime -D
         1.1 @babel/preset-env。
           问题：只能转换基本语法，如promise不能转换。
         1.2 '@babel/polyfill 全部js兼容处理，js文件顶部引入 import '@babel/polyfill'就可以了。

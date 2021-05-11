@@ -37,7 +37,8 @@ module.exports = {
           2. package.json 添加browserslist对象。
           
           postcss-loader作用: 
-          css兼容性处理: postcss --> postcss-loader postcss-preset-env
+          css兼容性处理: postcss 
+          安装：cnpm i postcss-loader postcss-preset-env -S
           postcss-preset-env作用: 找到 package.json 文件里面的浏览器兼容性配置 browserslist对象并执行里面的配置.
 
           browserslist对象 :
